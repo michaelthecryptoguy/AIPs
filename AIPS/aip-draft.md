@@ -58,42 +58,43 @@ Specifications
 inputs:
 N = number of delegates (or minimum number of PoS miners);
 C = integer less than N;
-D = dictionary to store hash and pledge secret locally
+D = dictionary to store hash and pledge secret locally;
+H = current block height;
 
-algorithm:
-function create_pledge()
+// algorithm:
+function create_pledge();
 {
-	rand = random.next()
-	salt = unix_time_epoch
-	public_rand = sha256(string(rand)+string(salt))
-	return public_rand, rand, salt
+	rand = random.next();
+	salt = unix_time_epoch;
+	public_rand = sha256(string(rand)+string(salt));
+	return public_rand, rand, salt;
 }
 
-if no_active_pledge:
-	public_rand, rand, salt = create_pledge()
-	D.add_item(public_rand, {rand, salt})
-	publish_pledge_tx(public_rand)
+// if no_active_pledge:
+	public_rand, rand, salt = create_pledge();
+	D.add_item(public_rand, {rand, salt});
+	publish_pledge_tx(public_rand);
 
-if H > 2*N:
+// if H > 2*N:
 {
 	for each pledge_i in D below height H-N:
 	{
-		j = sha256( concatenate_hashes_from_height(H-N, H-2*N) ) % C
+		j = sha256( concatenate_hashes_from_height(H-N, H-2*N) ) % C;
 		if D.at(pledge_i).rand%C == j:
 		{
-			D.remove(pledge_i)
-			public_rand, rand, salt = create_pledge()
-			D.add_item(public_rand, {rand, salt})
-			publish_pledge_tx(public_rand)
-			create_next_block()
+			D.remove(pledge_i);
+			public_rand, rand, salt = create_pledge();
+			D.add_item(public_rand, {rand, salt});
+			publish_pledge_tx(public_rand);
+			create_next_block();
 			break;
 		}
 		
 	}
 }
-else
+else;
 {
-	follow_old_algorithm()
+	follow_old_algorithm();
 }
 ```
 
